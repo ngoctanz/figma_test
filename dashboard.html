@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Báo cáo thống kê - HOUSEBOX Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #073b3a;
+        --primary-hover: #052b2a;
+        --secondary: #cbcd30;
+        --text: #030e0f;
+        --text-light: #64748b;
+        --bg-body: #f1f5f9;
+        --white: #ffffff;
+        --border: #e2e8f0;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --info: #3b82f6;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg-body);
+        color: var(--text);
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 260px;
+        background: var(--white);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        height: 100vh;
+        z-index: 10;
+      }
+      .sidebar-header {
+        height: 70px;
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+        border-bottom: 1px solid var(--border);
+      }
+      .sidebar-header img {
+        height: 32px;
+      }
+      .sidebar-menu {
+        padding: 24px 16px;
+        flex: 1;
+      }
+      .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        color: var(--text-light);
+        text-decoration: none;
+        border-radius: 8px;
+        margin-bottom: 4px;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+      .menu-item:hover,
+      .menu-item.active {
+        background: #f8fafc;
+        color: var(--primary);
+      }
+      .menu-item.active {
+        background: rgba(7, 59, 58, 0.05);
+      }
+      .menu-item svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        margin-left: 260px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Top Header */
+      .top-header {
+        height: 70px;
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 32px;
+        position: sticky;
+        top: 0;
+        z-index: 5;
+      }
+      .page-title {
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+      }
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--border);
+        overflow: hidden;
+      }
+      .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Dashboard Content */
+      .content-wrapper {
+        padding: 32px;
+      }
+
+      /* Stats Cards */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        margin-bottom: 32px;
+      }
+      .stat-card {
+        background: var(--white);
+        padding: 24px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+      }
+      .stat-label {
+        color: var(--text-light);
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+      .stat-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 4px;
+      }
+      .stat-trend {
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .trend-up {
+        color: var(--success);
+      }
+      .trend-down {
+        color: var(--danger);
+      }
+
+      /* Data Table Section */
+      .table-container {
+        background: var(--white);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+      }
+      .table-header {
+        padding: 24px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .table-title {
+        font-size: 18px;
+        font-weight: 600;
+      }
+      .table-actions {
+        display: flex;
+        gap: 12px;
+      }
+      .btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 14px;
+        cursor: pointer;
+        border: 1px solid var(--border);
+        background: var(--white);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: var(--white);
+        border-color: var(--primary);
+      }
+      .btn-primary:hover {
+        background: var(--primary-hover);
+      }
+
+      /* Table Styles */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .data-table th {
+        text-align: left;
+        padding: 16px 24px;
+        background: #f8fafc;
+        color: var(--text-light);
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border);
+      }
+      .data-table td {
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+        vertical-align: middle;
+      }
+      .data-table tr:last-child td {
+        border-bottom: none;
+      }
+      .data-table tr:hover {
+        background: #f8fafc;
+      }
+
+      /* Status Badges */
+      .badge {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+      }
+      .badge-success {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .badge-warning {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .badge-danger {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .badge-info {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+
+      /* Property Info in Table */
+      .property-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .property-thumb {
+        width: 48px;
+        height: 48px;
+        border-radius: 6px;
+        object-fit: cover;
+      }
+      .property-details h4 {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+      .property-details span {
+        font-size: 13px;
+        color: var(--text-light);
+      }
+
+      /* Pagination */
+      .pagination {
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid var(--border);
+      }
+      .page-info {
+        font-size: 14px;
+        color: var(--text-light);
+      }
+      .page-controls {
+        display: flex;
+        gap: 8px;
+      }
+      .page-btn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--white);
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .page-btn.active {
+        background: var(--primary);
+        color: var(--white);
+        border-color: var(--primary);
+      }
+
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          display: none;
+        }
+        .main-content {
+          margin-left: 0;
+        }
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+        .table-container {
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img
+          src="https://www.figma.com/api/mcp/asset/e3276852-4940-411e-91f4-924850cb8298"
+          alt="HOUSEBOX"
+        />
+      </div>
+      <nav class="sidebar-menu">
+        <a href="#" class="menu-item active">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Tổng quan
+        </a>
+        <a href="#" class="menu-item">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          Bất động sản
+        </a>
+        <a href="#" class="menu-item">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          Khách hàng
+        </a>
+        <a href="#" class="menu-item">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+          Giao dịch
+        </a>
+        <a href="#" class="menu-item">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="3"></circle>
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+            ></path>
+          </svg>
+          Cài đặt
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Header -->
+      <header class="top-header">
+        <h1 class="page-title">Báo cáo thống kê</h1>
+        <div class="user-profile">
+          <div style="text-align: right">
+            <div style="font-weight: 600; font-size: 14px">Ngọc Tân</div>
+            <div style="font-size: 12px; color: var(--text-light)">Admin</div>
+          </div>
+          <div class="avatar">
+            <img
+              src="https://ui-avatars.com/api/?name=Ngoc+Tan&background=073b3a&color=fff"
+              alt="Avatar"
+            />
+          </div>
+        </div>
+      </header>
+
+      <div class="content-wrapper">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Tổng doanh thu</div>
+            <div class="stat-value">128.5 Tỷ</div>
+            <div class="stat-trend trend-up">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+              </svg>
+              <span>+12.5% so với tháng trước</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Bất động sản mới</div>
+            <div class="stat-value">45</div>
+            <div class="stat-trend trend-up">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+              </svg>
+              <span>+8.2% so với tháng trước</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Lượt xem trang</div>
+            <div class="stat-value">12.8K</div>
+            <div class="stat-trend trend-down">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                <polyline points="17 18 23 18 23 12"></polyline>
+              </svg>
+              <span>-2.4% so với tháng trước</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Khách hàng tiềm năng</div>
+            <div class="stat-value">324</div>
+            <div class="stat-trend trend-up">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+              </svg>
+              <span>+5.3% so với tháng trước</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="table-container">
+          <div class="table-header">
+            <h2 class="table-title">Danh sách bất động sản gần đây</h2>
+            <div class="table-actions">
+              <button class="btn">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polygon
+                    points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"
+                  ></polygon>
+                </svg>
+                Bộ lọc
+              </button>
+              <button class="btn btn-primary">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Thêm mới
+              </button>
+            </div>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Mã BĐS</th>
+                <th>Thông tin bất động sản</th>
+                <th>Giá bán</th>
+                <th>Trạng thái</th>
+                <th>Ngày đăng</th>
+                <th>Người phụ trách</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>#HB-2024-001</td>
+                <td>
+                  <div class="property-info">
+                    <img
+                      src="images/house_1.png"
+                      alt="House"
+                      class="property-thumb"
+                    />
+                    <div class="property-details">
+                      <h4>Biệt thự sân vườn Thảo Điền</h4>
+                      <span>Quận 2, TP.HCM</span>
+                    </div>
+                  </div>
+                </td>
+                <td style="font-weight: 600; color: var(--primary)">12.5 Tỷ</td>
+                <td><span class="badge badge-success">Đang bán</span></td>
+                <td>20/11/2024</td>
+                <td>Ngọc Tân</td>
+                <td>
+                  <div style="display: flex; gap: 8px">
+                    <button
+                      class="btn"
+                      style="
+                        padding: 6px;
+                        border: none;
+                        background: transparent;
+                      "
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#64748b"
+                        stroke-width="2"
+                      >
+                        <path
+                          d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                        ></path>
+                        <path
+                          d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                        ></path>
+                      </svg>
+                    </button>
+                    <button
+                      class="btn"
+                      style="
+                        padding: 6px;
+                        border: none;
+                        background: transparent;
+                      "
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#ef4444"
+                        stroke-width="2"
+                      >
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path
+                          d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>#HB-2024-002</td>
+                <td>
+                  <div class="property-info">
+                    <img
+                      src="images/house_2.png"
+                      alt="House"
+                      class="property-thumb"
+                    />
+                    <div class="property-details">
+                      <h4>Căn hộ cao cấp Landmark 81</h4>
+                      <span>Bình Thạnh, TP.HCM</span>
+                    </div>
+                  </div>
+                </td>
+                <td style="font-weight: 600; color: var(--primary)">5.2 Tỷ</td>
+                <td>
+                  <span class="badge badge-warning">Đang thương lượng</span>
+                </td>
+                <td>19/11/2024</td>
+                <td>Minh Anh</td>
+                <td>
+                  <div style="display: flex; gap: 8px">
+                    <button
+                      class="btn"
+                      style="
+                        padding: 6px;
+                        border: none;
+                        background: transparent;
+                      "
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#64748b"
+                        stroke-width="2"
+                      >
+                        <path
+                          d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                        ></path>
+                        <path
+                          d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                        ></path>
+                      </svg>
+                    </button>
+                    <button
+                      class="btn"
+                      style="
+                        padding: 6px;
+                        border: none;
+                        background: transparent;
+                      "
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#ef4444"
+                        stroke-width="2"
+                      >
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path
+                          d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>#HB-2024-003</td>
+                <td>
+                  <div class="property-info">
+                    <img
+                      src="images/house_3.png"
+                      alt="House"
+                      class="property-thumb"
+                    />
+                    <div class="property-details">
+                      <h4>Nhà phố thương mại Hải Châu</h4>
+                      <span>Hải Châu, Đà Nẵng</span>
+                    </div>
+                  </div>
+                </td>
+                <td style="font-weight: 600; color: var(--primary)">8.9 Tỷ</td>
+                <td><span class="badge badge-success">Đang bán</span></td>
+                <td>18/11/2024</td>
+                <td>Hoàng Nam</td>
+                <td>
+                  <div style="display: flex; gap: 8px">
+                    <button
+                      class="btn"
+                      style="
+                        padding: 6px;
+                        border: none;
+                        background: transparent;
+                      "
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#64748b"
+                        stroke-width="2"
+                      >
+                        <path
+                          d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                        ></path>
+                        <path
+                          d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                        ></path>
+                      </svg>
+                    </button>
+                    <button
+                      class="btn"
+                      style="
+                        padding: 6px;
+                        border: none;
+                        background: transparent;
+                      "
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#ef4444"
+                        stroke-width="2"
+                      >
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path
+                          d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>#HB-2024-004</td>
+                <td>
+                  <div class="property-info">
+                    <img
+                      src="images/house_1.png"
+                      alt="House"
+                      class="property-thumb"
+                    />
+                    <div class="property-details">
+                      <h4>Penthouse View Biển</h4>
+                      <span>Sơn Trà, Đà Nẵng</span>
+                    </div>
+                  </div>
+                </td>
+                <td style="font-weight: 600; color: var(--primary)">25.0 Tỷ</td>
+                <td><span class="badge badge-info">Đã cọc</span></td>
+                <td>15/11/2024</td>
+                <td>Ngọc Tân</td>
+                <td>
+                  <div style="display: flex; gap: 8px">
+                    <button
+                      class="btn"
+                      style="
+                        padding: 6px;
+                        border: none;
+                        background: transparent;
+                      "
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#64748b"
+                        stroke-width="2"
+                      >
+                        <path
+                          d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                        ></path>
+                        <path
+                          d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                        ></path>
+                      </svg>
+                    </button>
+                    <button
+                      class="btn"
+                      style="
+                        padding: 6px;
+                        border: none;
+                        background: transparent;
+                      "
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#ef4444"
+                        stroke-width="2"
+                      >
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path
+                          d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>#HB-2024-005</td>
+                <td>
+                  <div class="property-info">
+                    <img
+                      src="images/house_2.png"
+                      alt="House"
+                      class="property-thumb"
+                    />
+                    <div class="property-details">
+                      <h4>Căn hộ Studio Full Nội thất</h4>
+                      <span>Quận 1, TP.HCM</span>
+                    </div>
+                  </div>
+                </td>
+                <td style="font-weight: 600; color: var(--primary)">3.5 Tỷ</td>
+                <td><span class="badge badge-danger">Đã bán</span></td>
+                <td>10/11/2024</td>
+                <td>Thu Hà</td>
+                <td>
+                  <div style="display: flex; gap: 8px">
+                    <button
+                      class="btn"
+                      style="
+                        padding: 6px;
+                        border: none;
+                        background: transparent;
+                      "
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#64748b"
+                        stroke-width="2"
+                      >
+                        <path
+                          d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                        ></path>
+                        <path
+                          d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                        ></path>
+                      </svg>
+                    </button>
+                    <button
+                      class="btn"
+                      style="
+                        padding: 6px;
+                        border: none;
+                        background: transparent;
+                      "
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#ef4444"
+                        stroke-width="2"
+                      >
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path
+                          d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Pagination -->
+          <div class="pagination">
+            <div class="page-info">
+              Hiển thị <strong>1-5</strong> trong tổng số
+              <strong>45</strong> bản ghi
+            </div>
+            <div class="page-controls">
+              <button class="page-btn">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+              <button class="page-btn active">1</button>
+              <button class="page-btn">2</button>
+              <button class="page-btn">3</button>
+              <button class="page-btn">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
