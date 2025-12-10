@@ -142,12 +142,64 @@
         background: #dbe034;
       }
 
+      .btn-outline {
+        border: 1px solid var(--primary);
+        color: var(--primary);
+        background: transparent;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      .btn-outline:hover {
+        background: #f0fdf9;
+      }
+
       .mobile-menu-btn {
         display: none;
         background: none;
         border: none;
         cursor: pointer;
         padding: 4px;
+      }
+
+      /* User Profile Styles */
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        padding: 6px 12px;
+        border-radius: 30px;
+        transition: background 0.2s;
+      }
+      .user-profile:hover {
+        background: #f8fafc;
+      }
+      .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .user-info {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+      }
+      .user-name {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--primary);
+      }
+      .user-role {
+        font-size: 11px;
+        color: var(--gray);
       }
 
       /* --- Footer Styles --- */
@@ -432,7 +484,7 @@
             </div>
           </div>
           <div class="top-auth">
-            <!-- Auth moved to main menu -->
+            <!-- Auth removed in top bar for this logged in version -->
           </div>
         </div>
       </div>
@@ -455,7 +507,7 @@
             <li><a href="#" class="nav-link">Liên hệ</a></li>
           </ul>
 
-          <div style="display: flex; gap: 12px; align-items: center">
+          <div style="display: flex; gap: 16px; align-items: center">
             <button class="mobile-menu-btn">
               <svg
                 width="24"
@@ -471,19 +523,35 @@
               </svg>
             </button>
 
-            <!-- Auth Buttons -->
+            <!-- Logged In State: User Profile & Post Button -->
             <a
-              href="login.html"
-              class="btn btn-outline"
-              style="padding: 10px 20px; font-size: 14px"
-              >Đăng nhập</a
+              href="#"
+              class="btn-post"
+              style="margin-right: 12px; text-decoration: none"
             >
-            <a
-              href="register.html"
-              class="btn btn-primary"
-              style="padding: 10px 20px; font-size: 14px"
-              >Đăng ký</a
-            >
+              <span class="plus-icon">+</span> Đăng tin
+            </a>
+
+            <div class="user-profile">
+              <div class="user-avatar">N</div>
+              <div class="user-info">
+                <div class="user-name">Ngọc Tân</div>
+                <div class="user-role">Thành viên</div>
+              </div>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                style="color: #64748b; margin-left: 4px"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -512,8 +580,8 @@
                   <input
                     type="text"
                     class="form-control"
-                    placeholder="Nguyễn Văn A"
-                    required
+                    value="Ngọc Tân"
+                    readonly
                   />
                 </div>
                 <div class="form-group">
@@ -521,8 +589,8 @@
                   <input
                     type="tel"
                     class="form-control"
-                    placeholder="090 123 4567"
-                    required
+                    value="090 123 4567"
+                    readonly
                   />
                 </div>
               </div>
@@ -531,8 +599,8 @@
                 <input
                   type="email"
                   class="form-control"
-                  placeholder="example@email.com"
-                  required
+                  value="ngoctanz@gmail.com"
+                  readonly
                 />
               </div>
             </div>

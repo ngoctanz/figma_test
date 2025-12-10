@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chỉnh sửa Bất động sản - Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #073b3a;
+        --secondary: #cbcd30;
+        --text: #030e0f;
+        --light: #f2f3f3;
+        --white: #ffffff;
+        --gray: #64748b;
+        --border: #e2e8f0;
+        --sidebar-width: 260px;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #f8fafc;
+        color: var(--text);
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Sidebar (Same as List) */
+      .sidebar {
+        width: var(--sidebar-width);
+        background: var(--primary);
+        color: var(--white);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        height: 100vh;
+        left: 0;
+        top: 0;
+      }
+      .sidebar-header {
+        height: 64px;
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .sidebar-header h2 {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--secondary);
+      }
+      .nav-links {
+        padding: 24px 16px;
+        flex: 1;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        color: #94a3b8;
+        text-decoration: none;
+        border-radius: 8px;
+        margin-bottom: 4px;
+        transition: all 0.2s;
+      }
+      .nav-item:hover,
+      .nav-item.active {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--white);
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-left: var(--sidebar-width);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Top Header */
+      .header {
+        height: 64px;
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 32px;
+      }
+      .page-title {
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      /* Content Area */
+      .content {
+        padding: 32px;
+        max-width: 1000px;
+        margin: 0 auto; /* Center the content */
+        width: 100%;
+      }
+
+      .form-container {
+        background: var(--white);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 32px;
+      }
+
+      .form-section {
+        margin-bottom: 32px;
+        padding-bottom: 32px;
+        border-bottom: 1px solid var(--border);
+      }
+      .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+
+      .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 24px;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 20px;
+      }
+      .form-row.three-col {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+      .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 8px;
+        color: var(--text);
+      }
+      .form-control {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+        transition: all 0.2s;
+      }
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(7, 59, 58, 0.1);
+      }
+      textarea.form-control {
+        min-height: 200px; /* Increased height */
+        resize: vertical;
+      }
+
+      .image-upload-area {
+        border: 2px dashed var(--border);
+        border-radius: 12px;
+        padding: 40px;
+        text-align: center;
+        background: #f8fafc;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-bottom: 20px;
+      }
+      .image-upload-area:hover {
+        border-color: var(--primary);
+        background: rgba(7, 59, 58, 0.02);
+      }
+      .upload-icon {
+        color: var(--gray);
+        margin-bottom: 12px;
+      }
+
+      .existing-images {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 16px;
+      }
+      .image-preview {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        height: 100px;
+        border: 1px solid var(--border);
+      }
+      .image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .remove-image {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 12px;
+      }
+      .remove-image:hover {
+        background: #ef4444;
+      }
+
+      .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 16px;
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        font-size: 14px;
+      }
+      .btn-secondary {
+        background: var(--white);
+        border: 1px solid var(--border);
+        color: var(--text);
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: var(--white);
+      }
+      .btn-primary:hover {
+        background: #052b2a;
+      }
+      .btn-danger-outline {
+        color: #ef4444;
+        background: transparent;
+        border: 1px solid #ef4444;
+        margin-right: auto; /* Push to left */
+      }
+      .btn-danger-outline:hover {
+        background: #fef2f2;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>HOUSEBOX ADMIN</h2>
+      </div>
+      <nav class="nav-links">
+        <a href="#" class="nav-item">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="admin_properties_list.html" class="nav-item active">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M3 21h18v-8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8z"></path>
+            <path d="M9 10a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"></path>
+          </svg>
+          <span>Bất động sản</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>Khách hàng</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <a
+            href="admin_properties_list.html"
+            style="color: var(--gray); display: flex; align-items: center"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+          </a>
+          <h1 class="page-title">Chỉnh sửa Bất động sản</h1>
+        </div>
+        <div class="user-profile">
+          <span style="font-size: 14px; font-weight: 500">Admin User</span>
+          <img
+            src="https://ui-avatars.com/api/?name=Admin&background=073b3a&color=fff"
+            class="user-avatar"
+            alt="Admin"
+          />
+        </div>
+      </header>
+
+      <div class="content">
+        <form class="form-container">
+          <!-- Basic Info -->
+          <div class="form-section">
+            <h3 class="section-title">Thông tin cơ bản</h3>
+            <div class="form-group">
+              <label>Tiêu đề tin đăng</label>
+              <input
+                type="text"
+                class="form-control"
+                value="Nhà phố thương mại 2 mặt tiền - Hải Châu"
+              />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Loại hình</label>
+                <select class="form-control">
+                  <option selected>Nhà phố</option>
+                  <option>Căn hộ chung cư</option>
+                  <option>Biệt thự</option>
+                  <option>Đất nền</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Mức giá</label>
+                <input type="text" class="form-control" value="8.9 Tỷ" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Địa chỉ hiển thị</label>
+              <input
+                type="text"
+                class="form-control"
+                value="234 Trần Phú, Hải Châu, Đà Nẵng"
+              />
+            </div>
+          </div>
+
+          <!-- Specs -->
+          <div class="form-section">
+            <h3 class="section-title">Thông số chi tiết</h3>
+            <div class="form-row three-col">
+              <div class="form-group">
+                <label>Diện tích (m²)</label>
+                <input type="number" class="form-control" value="120" />
+              </div>
+              <div class="form-group">
+                <label>Phòng ngủ</label>
+                <input type="number" class="form-control" value="3" />
+              </div>
+              <div class="form-group">
+                <label>Phòng tắm</label>
+                <input type="number" class="form-control" value="4" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Hướng nhà</label>
+                <input type="text" class="form-control" value="Đông Bắc" />
+              </div>
+              <div class="form-group">
+                <label>Pháp lý</label>
+                <input type="text" class="form-control" value="Sổ đỏ/Sổ hồng" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="form-section">
+            <h3 class="section-title">Mô tả & Hình ảnh</h3>
+            <div class="form-group">
+              <label>Mô tả chi tiết</label>
+              <textarea class="form-control">
+Cần bán gấp nhà phố thương mại 2 mặt tiền đường Trần Phú, vị trí đắc địa trung tâm quận Hải Châu, Đà Nẵng. Phù hợp kinh doanh mọi ngành nghề hoặc cho thuê văn phòng.
+                    
+- Diện tích: 120m² (5x24m).
+- Kết cấu: 1 trệt, 3 lầu, sân thượng.
+- Mặt tiền: 2 mặt tiền rộng 5m, thuận tiện kinh doanh.
+- Vị trí: Gần bệnh viện C, trường học, chợ Hàn, cầu Rồng.</textarea
+              >
+            </div>
+            <div class="form-group">
+              <label>Hình ảnh</label>
+              <div class="existing-images">
+                <div class="image-preview">
+                  <img src="images/house_3.png" alt="preview" />
+                  <button type="button" class="remove-image">×</button>
+                </div>
+                <div class="image-preview">
+                  <img src="images/villa_interior.png" alt="preview" />
+                  <button type="button" class="remove-image">×</button>
+                </div>
+                <div class="image-preview">
+                  <img src="images/hero_bg.png" alt="preview" />
+                  <button type="button" class="remove-image">×</button>
+                </div>
+              </div>
+              <div
+                class="image-upload-area"
+                style="margin-top: 16px; padding: 20px"
+              >
+                <span
+                  style="
+                    color: var(--primary);
+                    font-weight: 500;
+                    font-size: 14px;
+                  "
+                  >+ Thêm ảnh khác</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="form-section">
+            <h3 class="section-title">Trạng thái</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Trạng thái tin đăng</label>
+                <select class="form-control">
+                  <option selected>Đang bán</option>
+                  <option>Đã bán</option>
+                  <option>Đang ẩn</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-danger-outline">
+              Xóa tin này
+            </button>
+            <a href="admin_properties_list.html" class="btn btn-secondary"
+              >Hủy bỏ</a
+            >
+            <button type="submit" class="btn btn-primary">Cập nhật</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </body>
+</html>

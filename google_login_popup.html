@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập bằng Google</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 40px;
+        background-color: #f0f2f5;
+        font-family: "Roboto", sans-serif;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: center;
+        min-height: 100vh;
+        color: #202124;
+        gap: 20px;
+        flex-wrap: wrap;
+        box-sizing: border-box;
+      }
+      .google-container {
+        background: #fff;
+        width: 100%;
+        max-width: 448px; /* Google's standard width */
+        border-radius: 8px;
+        padding: 48px 40px 36px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-sizing: border-box;
+        margin-bottom: 20px;
+      }
+      .google-logo {
+        margin-bottom: 16px;
+      }
+      .title {
+        font-size: 24px;
+        font-weight: 500;
+        margin-bottom: 8px;
+        text-align: center;
+      }
+      .subtitle {
+        font-size: 16px;
+        margin-bottom: 40px;
+        text-align: center;
+        color: #202124;
+      }
+      .app-name {
+        font-weight: 500;
+        color: #073b3a; /* HouseBox primary color hint */
+      }
+
+      /* Account List Styles */
+      .account-list {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .account-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        border-bottom: 1px solid #dadce0;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        border-radius: 4px; /* Slight radius for hover effect */
+        margin-bottom: 4px;
+      }
+      .account-item:hover {
+        background-color: #f5f7f8;
+      }
+      .account-item:last-child {
+        border-bottom: none;
+      }
+
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #073b3a; /* Using brand color for avatar bg */
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 500;
+        margin-right: 12px;
+        flex-shrink: 0;
+      }
+
+      .account-info {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .account-name {
+        font-size: 14px;
+        font-weight: 500;
+        color: #3c4043;
+        line-height: 1.4;
+      }
+      .account-email {
+        font-size: 12px;
+        color: #5f6368;
+        line-height: 1.4;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .use-another {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        cursor: pointer;
+        font-weight: 500;
+        color: #5f6368;
+        font-size: 14px;
+        border-radius: 4px;
+        margin-top: 8px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .use-another:hover {
+        background-color: #f5f7f8;
+        color: #202124;
+      }
+      .use-another svg {
+        margin-right: 12px;
+        fill: currentColor;
+      }
+
+      /* Form Elements */
+      .input-group {
+        width: 100%;
+        margin-bottom: 24px;
+        position: relative;
+      }
+      input[type="text"],
+      input[type="email"],
+      input[type="password"] {
+        width: 100%;
+        padding: 13px 15px;
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        font-size: 16px;
+        box-sizing: border-box;
+        transition: 0.2s;
+        color: #202124;
+      }
+      input[type="text"]:focus,
+      input[type="email"]:focus,
+      input[type="password"]:focus {
+        border-color: #1a73e8;
+        border-width: 2px;
+        padding: 12px 14px; /* Adjust padding to compensate for border width */
+        outline: none;
+      }
+      .show-password {
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        color: #202124;
+      }
+      .show-password input {
+        margin-right: 8px;
+        width: auto;
+      }
+
+      /* Buttons */
+      .action-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-top: 36px;
+      }
+      .btn {
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-family: "Roboto", sans-serif;
+        font-weight: 500;
+        font-size: 14px;
+        border-radius: 4px;
+        padding: 8px 16px;
+      }
+      .btn-primary {
+        background-color: #1a73e8;
+        color: #fff;
+        padding: 10px 24px;
+      }
+      .btn-primary:hover {
+        background-color: #1557d5;
+        box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3),
+          0 1px 3px 1px rgba(60, 64, 67, 0.15);
+      }
+      .btn-text {
+        color: #1a73e8;
+        padding: 8px 0;
+      }
+      .btn-text:hover {
+        color: #174ea6;
+      }
+
+      .disclaimer {
+        margin-top: 40px;
+        font-size: 12px;
+        color: #5f6368;
+        text-align: center;
+        line-height: 1.5;
+      }
+      .disclaimer a {
+        color: #1a73e8;
+        text-decoration: none;
+      }
+
+      /* Card Headers - Not part of Google Design, just for visual separation in this file */
+      .card-header-guide {
+        width: 100%;
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #555;
+        text-transform: uppercase;
+      }
+
+      /* Responsive for smaller screens */
+      @media (max-width: 600px) {
+        body {
+          background-color: #fff;
+          align-items: flex-start;
+          padding: 0;
+          flex-direction: column;
+        }
+        .google-container {
+          box-shadow: none;
+          padding: 24px;
+          height: auto;
+          min-height: 100vh;
+          max-width: 100%;
+          border-radius: 0;
+          margin-bottom: 0;
+          border-bottom: 1px solid #eee;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 1. Original: Choose Account -->
+    <div class="google-container">
+      <div class="google-logo">
+        <img
+          src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
+          alt="Google"
+          height="30"
+        />
+      </div>
+
+      <div class="title">Chọn một tài khoản</div>
+      <div class="subtitle">
+        để tiếp tục đến <span class="app-name">HOUSEBOX</span>
+      </div>
+
+      <div class="account-list">
+        <div class="account-item">
+          <div class="avatar">N</div>
+          <div class="account-info">
+            <div class="account-name">Ngọc Tân</div>
+            <div class="account-email">lnt.ngoctan@gmail.com</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="use-another">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
+            fill="#5f6368"
+          />
+        </svg>
+        Sử dụng một tài khoản khác
+      </div>
+
+      <div class="disclaimer">
+        Để tiếp tục, Google sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn
+        với HOUSEBOX. Trước khi sử dụng ứng dụng này, bạn có thể xem lại
+        <a href="#">chính sách quyền riêng tư</a> và
+        <a href="#">điều khoản dịch vụ</a> của HOUSEBOX.
+      </div>
+    </div>
+
+    <!-- 2. Forgot Password: Enter Email -->
+    <div class="google-container">
+      <div class="google-logo">
+        <img
+          src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
+          alt="Google"
+          height="30"
+        />
+      </div>
+
+      <div class="title">Khôi phục tài khoản</div>
+      <div class="subtitle">Nhập email hoặc số điện thoại của bạn</div>
+
+      <div class="input-group">
+        <input type="text" placeholder="Email hoặc số điện thoại" value="" />
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn btn-text">Bạn quên địa chỉ email?</button>
+        <button class="btn btn-primary">Tiếp theo</button>
+      </div>
+    </div>
+
+    <!-- 3. Forgot Password: Enter OTP -->
+    <div class="google-container">
+      <div class="google-logo">
+        <img
+          src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
+          alt="Google"
+          height="30"
+        />
+      </div>
+
+      <div class="title">Xác minh danh tính</div>
+      <div class="subtitle">
+        Nhập mã xác minh gồm 6 số chúng tôi đã gửi đến email của bạn:
+        tan***@gmail.com
+      </div>
+
+      <div class="input-group">
+        <input type="text" placeholder="G-123456" />
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn btn-text">Gửi lại mã</button>
+        <button class="btn btn-primary">Tiếp theo</button>
+      </div>
+    </div>
+
+    <!-- 4. Forgot Password: New Password -->
+    <div class="google-container">
+      <div class="google-logo">
+        <img
+          src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
+          alt="Google"
+          height="30"
+        />
+      </div>
+
+      <div class="title">Đặt lại mật khẩu</div>
+      <div class="subtitle" style="text-align: left; font-size: 14px">
+        Tạo mật khẩu mạnh mà bạn không sử dụng cho các trang web khác
+      </div>
+
+      <div class="input-group">
+        <input type="password" placeholder="Mật khẩu mới" />
+      </div>
+
+      <div class="input-group">
+        <input type="password" placeholder="Xác nhận mật khẩu mới" />
+      </div>
+
+      <div class="show-password">
+        <input type="checkbox" id="show-pass" />
+        <label for="show-pass">Hiện mật khẩu</label>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn btn-text">Bỏ qua</button>
+        <button class="btn btn-primary">Lưu mật khẩu</button>
+      </div>
+    </div>
+  </body>
+</html>

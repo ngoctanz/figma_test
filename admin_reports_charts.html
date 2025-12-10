@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thống kê Báo cáo - Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #073b3a;
+        --secondary: #cbcd30;
+        --text: #030e0f;
+        --light: #f2f3f3;
+        --white: #ffffff;
+        --gray: #64748b;
+        --border: #e2e8f0;
+        --sidebar-width: 260px;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #f8fafc;
+        color: var(--text);
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Sidebar (Copied) */
+      .sidebar {
+        width: var(--sidebar-width);
+        background: var(--primary);
+        color: var(--white);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        height: 100vh;
+        left: 0;
+        top: 0;
+      }
+      .sidebar-header {
+        height: 64px;
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .sidebar-header h2 {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--secondary);
+      }
+      .nav-links {
+        padding: 24px 16px;
+        flex: 1;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        color: #94a3b8;
+        text-decoration: none;
+        border-radius: 8px;
+        margin-bottom: 4px;
+        transition: all 0.2s;
+      }
+      .nav-item:hover,
+      .nav-item.active {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--white);
+      }
+      .nav-item span {
+        font-weight: 500;
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-left: var(--sidebar-width);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Top Header */
+      .header {
+        height: 64px;
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 32px;
+      }
+      .page-title {
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      /* Content Area */
+      .content {
+        padding: 32px;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 32px;
+        border-bottom: 1px solid var(--border);
+      }
+      .tab {
+        padding: 12px 0;
+        color: var(--gray);
+        font-weight: 500;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        text-decoration: none;
+      }
+      .tab.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+      }
+      .tab:hover {
+        color: var(--primary);
+      }
+
+      /* Stats Cards */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        margin-bottom: 32px;
+      }
+      .stat-card {
+        background: var(--white);
+        padding: 24px;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border);
+      }
+      .stat-title {
+        font-size: 14px;
+        color: var(--gray);
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+      .stat-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 8px;
+      }
+      .stat-trend {
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .trend-up {
+        color: #166534;
+      }
+      .trend-down {
+        color: #991b1b;
+      }
+
+      /* Charts Area */
+      .charts-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 24px;
+      }
+
+      .chart-card {
+        background: var(--white);
+        padding: 24px;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border);
+      }
+      .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+      .chart-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .chart-filter {
+        select {
+          padding: 6px 12px;
+          border-radius: 6px;
+          border: 1px solid var(--border);
+          font-size: 13px;
+          color: var(--text);
+        }
+      }
+
+      /* CSS Bar Chart */
+      .bar-chart {
+        height: 300px;
+        display: flex;
+        align-items: flex-end;
+        gap: 16px;
+        padding-top: 20px;
+        position: relative;
+      }
+      .bar-group {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        height: 100%;
+        justify-content: flex-end;
+      }
+      .bar {
+        width: 100%;
+        background: var(--primary);
+        border-radius: 4px 4px 0 0;
+        transition: height 0.3s ease;
+        opacity: 0.8;
+      }
+      .bar:hover {
+        opacity: 1;
+      }
+      .bar-label {
+        font-size: 12px;
+        color: var(--gray);
+      }
+      .bar-value {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      /* Pie Chart */
+      .pie-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 300px;
+      }
+      .pie-chart {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: conic-gradient(
+          var(--primary) 0deg 216deg,
+          #cbcd30 216deg 300deg,
+          #dc2626 300deg 360deg
+        );
+        position: relative;
+        margin-bottom: 24px;
+      }
+      .pie-chart::after {
+        content: "";
+        position: absolute;
+        width: 140px;
+        height: 140px;
+        background: white;
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .chart-legend {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--gray);
+      }
+      .legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>HOUSEBOX ADMIN</h2>
+      </div>
+      <nav class="nav-links">
+        <a href="#" class="nav-item">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="admin_properties_list.html" class="nav-item">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M3 21h18v-8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8z"></path>
+            <path d="M9 10a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"></path>
+          </svg>
+          <span>Bất động sản</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>Khách hàng</span>
+        </a>
+        <a href="admin_reports_table.html" class="nav-item active">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+            ></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span>Báo cáo</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <h1 class="page-title">Thống kê hoạt động</h1>
+        <div class="user-profile">
+          <span style="font-size: 14px; font-weight: 500; color: var(--text)"
+            >Admin User</span
+          >
+          <img
+            src="https://ui-avatars.com/api/?name=Admin&background=073b3a&color=fff"
+            class="user-avatar"
+            alt="Admin"
+          />
+        </div>
+      </header>
+
+      <div class="content">
+        <div class="tabs">
+          <a href="admin_reports_table.html" class="tab">Danh sách chi tiết</a>
+          <a href="admin_reports_charts.html" class="tab active"
+            >Biểu đồ thống kê</a
+          >
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-title">Tổng lượt đăng ký</div>
+            <div class="stat-value" id="totalStat">...</div>
+            <div class="stat-trend trend-up">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+              </svg>
+              <span>+12.5% so với tháng trước</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Đã xác nhận</div>
+            <div class="stat-value" id="confirmedStat">...</div>
+            <div class="stat-trend trend-up">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+              </svg>
+              <span>Thành công cao</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Chờ xử lý</div>
+            <div class="stat-value" id="pendingStat">...</div>
+            <div class="stat-trend trend-down">
+              <span>Cần xử lý gấp</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Tỷ lệ hủy</div>
+            <div class="stat-value" id="cancelledRateStat">...</div>
+            <div class="stat-trend trend-down">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                <polyline points="17 18 23 18 23 12"></polyline>
+              </svg>
+              <span>Giảm 2% so với tháng trước</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="charts-grid">
+          <!-- Bar Chart -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">Lượt đăng ký xem nhà theo ngày</h3>
+              <div class="chart-filter">
+                <select>
+                  <option>7 ngày qua</option>
+                  <option>30 ngày qua</option>
+                  <option>Tháng này</option>
+                </select>
+              </div>
+            </div>
+            <div style="height: 300px">
+              <canvas id="barChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Pie Chart -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">Tỷ lệ trạng thái</h3>
+            </div>
+            <div style="height: 300px; display: flex; justify-content: center">
+              <canvas id="pieChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="report_data.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Shared Chart Defaults
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = "#94a3b8";
+
+        function processDataForCharts(data) {
+          // Process for Pie Chart
+          const statusCounts = data.reduce((acc, curr) => {
+            acc[curr.status] = (acc[curr.status] || 0) + 1;
+            return acc;
+          }, {});
+
+          // Process for Line Chart
+          const dateCounts = data.reduce((acc, curr) => {
+            const date = curr.date.split("-").reverse().join("/");
+            acc[date] = (acc[date] || 0) + 1;
+            return acc;
+          }, {});
+
+          const sortedDates = Object.keys(dateCounts).sort((a, b) => {
+            const dateA = a.split("/").reverse().join("-");
+            const dateB = b.split("/").reverse().join("-");
+            return new Date(dateA) - new Date(dateB);
+          });
+
+          return {
+            pie: {
+              labels: ["Đã xác nhận", "Chờ xác nhận", "Đã hủy"],
+              data: [
+                statusCounts["confirmed"] || 0,
+                statusCounts["pending"] || 0,
+                statusCounts["cancelled"] || 0,
+              ],
+            },
+            line: {
+              labels: sortedDates,
+              data: sortedDates.map((date) => dateCounts[date]),
+            },
+          };
+        }
+
+        // 0. Update Stats Cards (Added logic)
+        const total = reportData.length;
+        const confirmed = reportData.filter(
+          (item) => item.status === "confirmed"
+        ).length;
+        const pending = reportData.filter(
+          (item) => item.status === "pending"
+        ).length;
+        const cancelled = reportData.filter(
+          (item) => item.status === "cancelled"
+        ).length;
+        const cancelRate =
+          total > 0 ? ((cancelled / total) * 100).toFixed(1) : 0;
+
+        document.getElementById("totalStat").textContent = total;
+        document.getElementById("confirmedStat").textContent = confirmed;
+        document.getElementById("pendingStat").textContent = pending;
+        document.getElementById("cancelledRateStat").textContent =
+          cancelRate + "%";
+
+        const chartData = processDataForCharts(reportData);
+
+        // 1. Modern Smooth Area Chart (Timeline)
+        const ctxLine = document.getElementById("barChart").getContext("2d"); // Reusing the canvas ID
+
+        const gradientFill = ctxLine.createLinearGradient(0, 0, 0, 300);
+        gradientFill.addColorStop(0, "rgba(7, 59, 58, 0.2)"); // Primary soft
+        gradientFill.addColorStop(1, "rgba(7, 59, 58, 0.0)");
+
+        new Chart(ctxLine, {
+          type: "line",
+          data: {
+            labels: chartData.line.labels,
+            datasets: [
+              {
+                label: "Lượt đăng ký",
+                data: chartData.line.data,
+                borderColor: "#073b3a",
+                backgroundColor: gradientFill,
+                borderWidth: 3,
+                tension: 0.4, // Smooth curves
+                fill: true,
+                pointBackgroundColor: "#ffffff",
+                pointBorderColor: "#073b3a",
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                titleColor: "#0f172a",
+                bodyColor: "#334155",
+                borderColor: "#e2e8f0",
+                borderWidth: 1,
+                padding: 10,
+                displayColors: false,
+                callbacks: {
+                  label: function (context) {
+                    return context.parsed.y + " lượt";
+                  },
+                },
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { stepSize: 1, color: "#94a3b8" },
+                grid: {
+                  color: "#f1f5f9",
+                  borderDash: [5, 5],
+                },
+                border: { display: false },
+              },
+              x: {
+                grid: { display: false },
+                ticks: { color: "#64748b" },
+                border: { display: false },
+              },
+            },
+          },
+        });
+
+        // 2. Modern Thin Rounded Doughnut (Status)
+        const ctxPie = document.getElementById("pieChart").getContext("2d");
+        new Chart(ctxPie, {
+          type: "doughnut",
+          data: {
+            labels: chartData.pie.labels,
+            datasets: [
+              {
+                data: chartData.pie.data,
+                backgroundColor: [
+                  "#073b3a", // Confirmed
+                  "#fbbf24", // Pending (Warmer Yellow)
+                  "#f87171", // Cancelled (Softer Red)
+                ],
+                borderWidth: 0,
+                borderRadius: 20, // Rounded ends
+                spacing: 12, // Space between segments
+                hoverOffset: 15,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "85%", // Very thin ring
+            plugins: {
+              legend: {
+                position: "bottom",
+                labels: {
+                  padding: 30,
+                  usePointStyle: true,
+                  pointStyle: "circle",
+                  font: { size: 12, weight: 600 },
+                },
+              },
+              tooltip: {
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                titleColor: "#0f172a",
+                bodyColor: "#334155",
+                borderColor: "#e2e8f0",
+                borderWidth: 1,
+                padding: 12,
+                boxPadding: 6,
+              },
+            },
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
